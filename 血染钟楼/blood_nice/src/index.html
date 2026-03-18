@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>血染奈斯 - Blood Nice</title>
+    <style>
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-card: #0f3460;
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --accent: #e94560;
+            --accent-hover: #ff6b6b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(ellipse at top, #1a1a2e 0%, #0f0f1a 100%);
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 5px;
+            text-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 40px;
+        }
+        
+        .login-box {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .login-box h2 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            margin-bottom: 15px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            text-align: center;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+        }
+        
+        .error {
+            color: #ef4444;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .room-list {
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .room-list h3 {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .room-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        
+        .room-item:hover {
+            transform: translateX(5px);
+            background: rgba(233, 69, 96, 0.2);
+        }
+        
+        .room-item a {
+            color: var(--text-primary);
+            text-decoration: none;
+            flex: 1;
+        }
+        
+        .room-count {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        .delete-room {
+            color: #ef4444;
+            cursor: pointer;
+            padding: 5px 10px;
+            margin-left: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .delete-room:hover {
+            color: #ff6b6b;
+        }
+        
+        .create-room-box {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .create-room-box input {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🕐</div>
+        <h1>血染奈斯</h1>
+        <p class="subtitle">Blood Nice - 血染钟楼房间管理</p>
+        
+        <div class="login-box" id="mainBox">
+            <div style="margin-bottom: 20px;">
+                <a href="/blood-crypt/board_generator.html" style="display: block; padding: 15px; background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); border-radius: 8px; color: white; text-decoration: none; font-weight: bold;">
+                    🎲 随机板子生成器
+                </a>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <a href="/blood-crypt/leaderboard.html" style="display: block; padding: 15px; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 8px; color: #000; text-decoration: none; font-weight: bold;">
+                    🏆 玩家排名榜
+                </a>
+            </div>
+            
+            <h2>🎭 我的房间</h2>
+            <div class="room-list" id="roomList"></div>
+            
+            <div class="create-room-box">
+                <h3>创建新房</h3>
+                <input type="text" id="newRoomName" placeholder="房间名称 (如: 周六晚局)">
+                <select id="scriptSelect" style="width: 100%; padding: 14px 18px; margin-bottom: 15px; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: var(--text-primary); font-size: 1rem;">
+                    <option value="bad_moon_rising">暗流涌动</option>
+                    <option value="sects_violets">紫罗兰</option>
+                </select>
+                <button class="btn btn-primary" onclick="createRoom()">+ 创建房间</button>
+            </div>
+        </div>
+        
+        <p class="footer">Powered by OpenClaw 🧸</p>
+    </div>
+    
+    <script>
+        const STORAGE_KEY = 'bloodNiceRooms';
+        
+        function getRooms() {
+            const rooms = localStorage.getItem(STORAGE_KEY);
+            return rooms ? JSON.parse(rooms) : [];
+        }
+        
+        function saveRooms(rooms) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms));
+        }
+        
+        function loadRooms() {
+            const rooms = getRooms();
+            const list = document.getElementById('roomList');
+            
+            if (rooms.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">暂无房间，请创建</p>';
+                return;
+            }
+            
+            list.innerHTML = rooms.map((room, index) => {
+                const scriptName = room.script === 'sects_violets' ? '紫罗兰' : '暗流涌动';
+                const scriptEmoji = room.script === 'sects_violets' ? '💜' : '🌙';
+                const htmlFile = room.script === 'sects_violets' ? 'room_follower.html' : 'room.html';
+                const roomLink = '/blood-crypt/room/' + room.id + '/' + htmlFile;
+                return `
+                <div class="room-item">
+                    <a href="${roomLink}">
+                        <span>${scriptEmoji} ${room.name}</span>
+                        <span class="room-count">(${scriptName} · ${room.playerCount || 0}人)</span>
+                    </a>
+                    <span class="delete-room" onclick="deleteRoom(${index})">×</span>
+                </div>
+            `}).join('');
+        }
+        
+        function createRoom() {
+            const name = document.getElementById('newRoomName').value.trim();
+            const script = document.getElementById('scriptSelect').value;
+            if (!name) {
+                alert('请输入房间名称');
+                return;
+            }
+            
+            const rooms = getRooms();
+            const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            
+            rooms.push({
+                id,
+                name,
+                script,
+                playerCount: 0,
+                createdAt: new Date().toISOString()
+            });
+            
+            saveRooms(rooms);
+            document.getElementById('newRoomName').value = '';
+            loadRooms();
+        }
+        
+        function deleteRoom(index) {
+            if (confirm('确定删除这个房间吗？')) {
+                const rooms = getRooms();
+                rooms.splice(index, 1);
+                saveRooms(rooms);
+                loadRooms();
+            }
+        }
+        
+        // Load rooms on page load
+        loadRooms();
+    </script>
+</body>
+</html>
