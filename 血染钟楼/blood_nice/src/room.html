@@ -1351,12 +1351,34 @@
                         <span>${l.phase === 'night' ? '🌙 夜间' : '☀️ 白天'}</span>
                         <span>
                             <span style="margin-right: 10px; color: var(--text-secondary); font-size: 0.8rem;">${l.time}</span>
+                            <span onclick="moveLogUp(${index})" style="cursor:pointer; margin-right: 5px;" title="上移" ${index === 0 ? 'style="cursor:not-allowed;opacity:0.3;"' : ''}>⬆️</span>
+                            <span onclick="moveLogDown(${index})" style="cursor:pointer; margin-right: 5px;" title="下移" ${index === state.logs.length - 1 ? 'style="cursor:not-allowed;opacity:0.3;"' : ''}>⬇️</span>
                             <span onclick="deleteLog(${index})" style="cursor:pointer; color: var(--danger);" title="删除">🗑️</span>
                         </span>
                     </div>
                     <div class="log-content" onclick="editLog(${index})" style="cursor:pointer;">${l.content}</div>
                 </div>
             `).join('');
+        }
+        
+        // Move log up
+        function moveLogUp(index) {
+            if (index === 0) return;
+            const temp = state.logs[index];
+            state.logs[index] = state.logs[index - 1];
+            state.logs[index - 1] = temp;
+            saveState();
+            render();
+        }
+        
+        // Move log down
+        function moveLogDown(index) {
+            if (index === state.logs.length - 1) return;
+            const temp = state.logs[index];
+            state.logs[index] = state.logs[index + 1];
+            state.logs[index + 1] = temp;
+            saveState();
+            render();
         }
         
         // Delete log
