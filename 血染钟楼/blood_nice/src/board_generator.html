@@ -358,6 +358,22 @@
             // 紫罗兰简化版配比（类似暗流涌动）
             let alignment = { ...alignmentTable[playerCount] };
             
+            // 先抽取恶魔，根据恶魔类型调整配比
+            const selectedDemon = getRandomItems(sectsViolets.demons, 1);
+            const demon = selectedDemon[0];
+            
+            // 亡灵法师特殊规则：外来者-1，村民+1（外来者不能为0）
+            if (demon === '亡灵法师' && alignment.outsiders > 0) {
+                alignment.outsiders -= 1;
+                alignment.townsfolk += 1;
+            }
+            
+            // 噬梦游魂特殊规则：外来者+1，村民-1
+            if (demon === '噬梦游魂') {
+                alignment.outsiders += 1;
+                alignment.townsfolk -= 1;
+            }
+            
             let roles = [];
             
             // 村民
@@ -372,8 +388,7 @@
             const selectedMinions = getRandomItems(sectsViolets.minions, alignment.minions);
             roles.push(...selectedMinions);
             
-            // 恶魔 - 随机选1个
-            const selectedDemon = getRandomItems(sectsViolets.demons, 1);
+            // 恶魔
             roles.push(...selectedDemon);
             
             // 旅行者 (15人及以上)
