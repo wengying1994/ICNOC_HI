@@ -1,0 +1,34 @@
+http:
+  routers:
+    blood-crypt:
+      rule: "PathPrefix(`/blood-crypt`)"
+      service: blood-crypt
+      middlewares:
+        - blood-crypt-stripprefix
+      priority: 50
+    report-platform:
+      rule: "PathPrefix(`/report-platform`)"
+      service: report-platform
+      middlewares:
+        - report-platform-stripprefix
+      priority: 50
+
+  services:
+    blood-crypt:
+      loadBalancer:
+        servers:
+          - url: "http://blood-crypt:80"
+    report-platform:
+      loadBalancer:
+        servers:
+          - url: "http://report-platform:80"
+
+  middlewares:
+    blood-crypt-stripprefix:
+      stripPrefix:
+        prefixes:
+          - /blood-crypt
+    report-platform-stripprefix:
+      stripPrefix:
+        prefixes:
+          - /report-platform

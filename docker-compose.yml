@@ -1,0 +1,55 @@
+services:
+  # 反向代理
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/traefik.yml:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`localhost`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+
+  # 血染钟楼前端
+  blood-web:
+    build: ./血染钟楼/blood_nice
+    container_name: blood-web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.blood-web.rule=PathPrefix(`/blood-crypt`) || PathPrefix(`/leaderboard`) || PathPrefix(`/room`)"
+      - "traefik.http.services.blood-web.loadbalancer.server.port=80"
+    restart: unless-stopped
+    depends_on:
+      - blood-api
+
+  # 血染钟楼后端 API
+  blood-api:
+    build: ./血染钟楼/blood_nice
+    container_name: blood-api
+    volumes:
+      - blood-data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.blood-api.rule=PathPrefix(`/api`)"
+      - "traefik.http.services.blood-api.loadbalancer.server.port=3000"
+    restart: unless-stopped
+
+  # 门户首页
+  portal:
+    image: nginx:alpine
+    container_name: portal
+    volumes:
+      - ./portal:/usr/share/nginx/html:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portal.rule=PathPrefix(`/`) && !PathPrefix(`/blood-crypt`) && !PathPrefix(`/leaderboard`) && !PathPrefix(`/room`) && !PathPrefix(`/api`)"
+      - "traefik.http.services.portal.loadbalancer.server.port=80"
+    restart: unless-stopped
+
+volumes:
+  blood-data:

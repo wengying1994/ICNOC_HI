@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>血染钟楼 - 随机板子生成器</title>
+    <style>
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-card: #0f3460;
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --accent: #e94560;
+            --accent-hover: #ff6b6b;
+            --success: #4ade80;
+            --purple: #a855f7;
+            --warning: #fbbf24;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(ellipse at top, #1a1a2e 0%, #0f0f1a 100%);
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--accent);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--accent);
+        }
+        
+        .result {
+            text-align: left;
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result h3 {
+            color: var(--success);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .result-list {
+            list-style: none;
+        }
+        
+        .result-list li {
+            padding: 8px 12px;
+            margin: 4px 0;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+        
+        .result-list li.traveler {
+            color: var(--warning);
+            border: 1px dashed var(--warning);
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .error {
+            color: var(--accent);
+            margin-top: 10px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 随机板子生成器</h1>
+        <p class="subtitle">血染钟楼 - 角色随机分配</p>
+        
+        <div class="card">
+            <div class="form-group">
+                <label>选择剧本</label>
+                <select id="scriptSelect">
+                    <option value="bad_moon_rising">暗流涌动</option>
+                    <option value="sects_violets">紫罗兰</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>玩家人数</label>
+                <select id="playerCount">
+                    <option value="">-- 请选择人数 --</option>
+                    <option value="5">5人 (村民3 外来者0 爪牙1 恶魔1)</option>
+                    <option value="6">6人 (村民3 外来者1 爪牙1 恶魔1)</option>
+                    <option value="7">7人 (村民5 外来者0 爪牙1 恶魔1)</option>
+                    <option value="8">8人 (村民5 外来者1 爪牙1 恶魔1)</option>
+                    <option value="9">9人 (村民5 外来者2 爪牙1 恶魔1)</option>
+                    <option value="10">10人 (村民7 外来者0 爪牙2 恶魔1)</option>
+                    <option value="11">11人 (村民7 外来者1 爪牙2 恶魔1)</option>
+                    <option value="12">12人 (村民7 外来者2 爪牙2 恶魔1)</option>
+                    <option value="13">13人 (村民9 外来者0 爪牙3 恶魔1)</option>
+                    <option value="14">14人 (村民9 外来者1 爪牙3 恶魔1)</option>
+                    <option value="15">15人 (村民9 外来者2 爪牙3 恶魔1 旅行者)</option>
+                    <option value="16">16人 (村民9 外来者2 爪牙3 恶魔1 旅行者)</option>
+                    <option value="17">17人 (村民9 外来者2 爪牙3 恶魔1 旅行者)</option>
+                    <option value="18">18人 (村民9 外来者2 爪牙3 恶魔1 旅行者)</option>
+                    <option value="19">19人 (村民9 外来者2 爪牙3 恶魔1 旅行者)</option>
+                    <option value="20">20人 (村民9 外来者2 爪牙3 恶魔1 旅行者)</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-primary" onclick="generateBoard()">🎲 生成随机板子</button>
+            <div class="error" id="error"></div>
+            
+            <div class="result" id="result">
+                <h3>📋 随机板子</h3>
+                <ul class="result-list" id="resultList"></ul>
+                <button class="btn btn-secondary" style="margin-top: 15px;" onclick="copyResult()">📋 复制角色列表</button>
+            </div>
+        </div>
+        
+        <a href="/blood-crypt/" class="back-link">← 返回首页</a>
+    </div>
+    
+    <script>
+        // 暗流涌动角色池
+        const badMoonRising = {
+            townsfolk: ['洗衣妇', '图书管理员', '调查员', '厨师', '共情者', '占卜师', '送葬者', '僧侣', '乌鸦守卫者', '处女', '猎人', '士兵', '市长'],
+            outsiders: ['管家', '酒鬼', '隐士', '圣徒'],
+            minions: ['下毒者', '间谍', '绯红夫人', '男爵'],
+            demons: ['小恶魔']
+        };
+        
+        // 紫罗兰角色池（预留）
+        const sectsViolets = {
+            townsfolk: ['艺术家', '钟表匠', '梦卜者', '卖花女', '杂耍者', '数学家', '神谕者', '哲学家', '贤者', '博学者', '裁缝', '舞蛇人', '公告员'],
+            outsiders: ['变种人', '心上人', '理发师', '傻瓜'],
+            minions: ['镜像双子', '巫师', '洗脑师', '熬药巫婆'],
+            demons: ['噬梦游魂', '亡灵法师', '腐化邪神', '迷乱漩涡']
+        };
+        
+        // 阵营配比表
+        const alignmentTable = {
+            5: { townsfolk: 3, outsiders: 0, minions: 1, demon: 1 },
+            6: { townsfolk: 3, outsiders: 1, minions: 1, demon: 1 },
+            7: { townsfolk: 5, outsiders: 0, minions: 1, demon: 1 },
+            8: { townsfolk: 5, outsiders: 1, minions: 1, demon: 1 },
+            9: { townsfolk: 5, outsiders: 2, minions: 1, demon: 1 },
+            10: { townsfolk: 7, outsiders: 0, minions: 2, demon: 1 },
+            11: { townsfolk: 7, outsiders: 1, minions: 2, demon: 1 },
+            12: { townsfolk: 7, outsiders: 2, minions: 2, demon: 1 },
+            13: { townsfolk: 9, outsiders: 0, minions: 3, demon: 1 },
+            14: { townsfolk: 9, outsiders: 1, minions: 3, demon: 1 },
+            15: { townsfolk: 9, outsiders: 2, minions: 3, demon: 1, traveler: true }
+        };
+        
+        function shuffle(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+        
+        function getRandomItems(arr, count) {
+            const shuffled = shuffle(arr);
+            return shuffled.slice(0, count);
+        }
+        
+        function showError(msg) {
+            const errorEl = document.getElementById('error');
+            errorEl.textContent = msg;
+            errorEl.classList.add('show');
+        }
+        
+        function hideError() {
+            document.getElementById('error').classList.remove('show');
+        }
+        
+        function generateBadMoonRisingBoard(playerCount) {
+            let alignment = { ...alignmentTable[playerCount] };
+            
+            // 先抽取爪牙，检查是否有男爵
+            const selectedMinions = getRandomItems(badMoonRising.minions, alignment.minions);
+            
+            // 男爵特殊规则：村民-2，外来者+2（最多4个）
+            if (selectedMinions.includes('男爵')) {
+                alignment.townsfolk = Math.max(0, alignment.townsfolk - 2);
+                alignment.outsiders = Math.min(4, alignment.outsiders + 2);
+            }
+            
+            // 随机抽取角色
+            let roles = [];
+            
+            // 村民
+            const selectedTownsfolk = getRandomItems(badMoonRising.townsfolk, alignment.townsfolk);
+            roles.push(...selectedTownsfolk);
+            
+            // 外来者
+            const selectedOutsiders = getRandomItems(badMoonRising.outsiders, alignment.outsiders);
+            roles.push(...selectedOutsiders);
+            
+            // 爪牙
+            roles.push(...selectedMinions);
+            
+            // 恶魔
+            const selectedDemon = getRandomItems(badMoonRising.demons, alignment.demon);
+            roles.push(...selectedDemon);
+            
+            // 旅行者 (15人及以上)
+            if (alignment.traveler) {
+                roles.push('旅行者');
+            }
+            
+            // 完全随机打乱
+            roles = shuffle(roles);
+            
+            // 占卜师特殊规则：随机给一个好人加-宿敌
+            if (roles.includes('占卜师')) {
+                // 找出好人阵营（村民+外来者，不包括占卜师自己）
+                const goodRoles = roles.filter(r => 
+                    (badMoonRising.townsfolk.includes(r) || badMoonRising.outsiders.includes(r)) && r !== '占卜师'
+                );
+                if (goodRoles.length > 0) {
+                    const randomGood = goodRoles[Math.floor(Math.random() * goodRoles.length)];
+                    const index = roles.indexOf(randomGood);
+                    roles[index] = randomGood + '-宿敌';
+                }
+            }
+            
+            // 酒鬼特殊规则：随机选一个不在场的村民加到酒鬼后面
+            if (roles.includes('酒鬼')) {
+                // 找出不在场的村民
+                const availableTownsfolk = badMoonRising.townsfolk.filter(r => !roles.includes(r));
+                if (availableTownsfolk.length > 0) {
+                    const randomTown = availableTownsfolk[Math.floor(Math.random() * availableTownsfolk.length)];
+                    const index = roles.indexOf('酒鬼');
+                    roles[index] = '酒鬼-' + randomTown;
+                }
+            }
+            
+            return roles;
+        }
+        
+        function generateSectsVioletsBoard(playerCount) {
+            // 紫罗兰简化版配比（类似暗流涌动）
+            let alignment = { ...alignmentTable[playerCount] };
+            
+            // 先抽取恶魔，根据恶魔类型调整配比
+            const selectedDemon = getRandomItems(sectsViolets.demons, 1);
+            const demon = selectedDemon[0];
+            
+            // 亡灵法师特殊规则：外来者-1，村民+1（外来者不能为0）
+            if (demon === '亡灵法师' && alignment.outsiders > 0) {
+                alignment.outsiders -= 1;
+                alignment.townsfolk += 1;
+            }
+            
+            // 噬梦游魂特殊规则：外来者+1，村民-1
+            if (demon === '噬梦游魂') {
+                alignment.outsiders += 1;
+                alignment.townsfolk -= 1;
+            }
+            
+            let roles = [];
+            
+            // 村民
+            const selectedTownsfolk = getRandomItems(sectsViolets.townsfolk, alignment.townsfolk);
+            roles.push(...selectedTownsfolk);
+            
+            // 外来者
+            const selectedOutsiders = getRandomItems(sectsViolets.outsiders, alignment.outsiders);
+            roles.push(...selectedOutsiders);
+            
+            // 爪牙
+            const selectedMinions = getRandomItems(sectsViolets.minions, alignment.minions);
+            roles.push(...selectedMinions);
+            
+            // 恶魔
+            roles.push(...selectedDemon);
+            
+            // 旅行者 (15人及以上)
+            if (alignment.traveler) {
+                roles.push('旅行者');
+            }
+            
+            // 完全随机打乱
+            roles = shuffle(roles);
+            
+            return roles;
+        }
+        
+        function generateBoard() {
+            hideError();
+            
+            const script = document.getElementById('scriptSelect').value;
+            const playerCount = parseInt(document.getElementById('playerCount').value);
+            
+            if (!playerCount || playerCount < 5 || playerCount > 20) {
+                showError('请选择5-20人之间的玩家人数');
+                return;
+            }
+            
+            let roles;
+            if (script === 'bad_moon_rising') {
+                roles = generateBadMoonRisingBoard(playerCount);
+            } else {
+                roles = generateSectsVioletsBoard(playerCount);
+            }
+            
+            // 显示结果
+            const resultEl = document.getElementById('result');
+            const resultListEl = document.getElementById('resultList');
+            
+            resultListEl.innerHTML = roles.map(role => {
+                if (role === '旅行者') {
+                    return `<li class="traveler">✈️ ${role}</li>`;
+                }
+                return `<li>${role}</li>`;
+            }).join('');
+            
+            resultEl.classList.add('show');
+        }
+        
+        function copyResult() {
+            const resultListEl = document.getElementById('resultList');
+            const roles = Array.from(resultListEl.querySelectorAll('li')).map(li => li.textContent);
+            const text = roles.join('\n');
+            
+            // 兼容非HTTPS环境的复制方法
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert('角色列表已复制到剪贴板！');
+            } catch (err) {
+                // 降级方案：显示文本让用户手动复制
+                prompt('复制失败，请手动复制以下内容：', text);
+            }
+            
+            document.body.removeChild(textarea);
+        }
+    </script>
+</body>
+</html>
