@@ -275,10 +275,21 @@
             background: rgba(168, 85, 247, 0.2);
             color: var(--purple);
         }
-        
+
         .status-dead-voted {
             background: rgba(59, 130, 246, 0.2);
             color: #3b82f6;
+        }
+
+        .status-insane {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .status-dead-insane {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            opacity: 0.8;
         }
         
         .player-actions {
@@ -1100,7 +1111,7 @@
             
             // Players
             replay += '## 👥 玩家名单\n';
-            const statusMap = { 'alive': '存活', 'dead': '死亡', 'poisoned': '中毒', 'dead-poisoned': '死亡+中毒', 'dead-voted': '死亡+已投票' };
+            const statusMap = { 'alive': '存活', 'dead': '死亡', 'poisoned': '中毒', 'insane': '疯狂', 'dead-poisoned': '死亡+中毒', 'dead-insane': '死亡+疯狂', 'dead-voted': '死亡+已投票' };
             
             if (state.players.length === 0) {
                 replay += '(暂无玩家)\n';
@@ -1162,7 +1173,7 @@
             
             // Players
             replay += '## 👥 玩家名单\n';
-            const statusMap = { 'alive': '存活', 'dead': '死亡', 'poisoned': '中毒', 'dead-poisoned': '死亡+中毒', 'dead-voted': '死亡+已投票' };
+            const statusMap = { 'alive': '存活', 'dead': '死亡', 'poisoned': '中毒', 'insane': '疯狂', 'dead-poisoned': '死亡+中毒', 'dead-insane': '死亡+疯狂', 'dead-voted': '死亡+已投票' };
             
             if (state.players.length === 0) {
                 replay += '(暂无玩家)\n';
@@ -1281,7 +1292,7 @@
         
         function renderStats() {
             const total = state.players.length;
-            const dead = state.players.filter(p => p.status === 'dead' || p.status === 'dead-poisoned' || p.status === 'dead-voted').length;
+            const dead = state.players.filter(p => p.status === 'dead' || p.status === 'dead-poisoned' || p.status === 'dead-voted' || p.status === 'dead-insane').length;
             const alive = total - dead;
             
             document.getElementById('totalPlayers').textContent = total;
@@ -1311,22 +1322,24 @@
             }
             
             // Sort: dead last, keep others in original order
-            const deadStatus = ['dead', 'dead-poisoned', 'dead-voted'];
+            const deadStatus = ['dead', 'dead-poisoned', 'dead-voted', 'dead-insane'];
             const sortedPlayers = [...state.players].sort((a, b) => {
                 const aDead = deadStatus.includes(a.status) ? 1 : 0;
                 const bDead = deadStatus.includes(b.status) ? 1 : 0;
                 if (aDead !== bDead) return aDead - bDead;
                 return a.number - b.number;
             });
-            
+
             const statusMap = {
                 'alive': '存活',
                 'dead': '死亡',
                 'poisoned': '中毒',
+                'insane': '疯狂',
                 'dead-poisoned': '死亡+中毒',
+                'dead-insane': '死亡+疯狂',
                 'dead-voted': '死亡+已投票'
             };
-            
+
             list.innerHTML = sortedPlayers.map(p => `
                 <div class="player-item">
                     <div class="player-number">${p.number}</div>
@@ -1338,10 +1351,12 @@
                         <option value="alive" ${p.status === 'alive' ? 'selected' : ''}>存活</option>
                         <option value="dead" ${p.status === 'dead' ? 'selected' : ''}>死亡</option>
                         <option value="poisoned" ${p.status === 'poisoned' ? 'selected' : ''}>中毒</option>
+                        <option value="insane" ${p.status === 'insane' ? 'selected' : ''}>疯狂</option>
                         <option value="dead-poisoned" ${p.status === 'dead-poisoned' ? 'selected' : ''}>死亡+中毒</option>
+                        <option value="dead-insane" ${p.status === 'dead-insane' ? 'selected' : ''}>死亡+疯狂</option>
                         <option value="dead-voted" ${p.status === 'dead-voted' ? 'selected' : ''}>死亡+已投票</option>
                     </select>
-                    <div class="player-status status-${p.status}">${statusMap[p.status]}</div>
+                    <div class="player-status status-${p.status}">${statusMap[p.status] || p.status}</div>
                     <div class="player-actions">
                         <button class="btn btn-primary btn-small" onclick="editPlayer(${p.number})">编辑</button>
                         <button class="btn btn-danger btn-small" onclick="removePlayer(${p.number})">删除</button>

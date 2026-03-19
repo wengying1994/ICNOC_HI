@@ -171,6 +171,43 @@ app.delete('/api/vs-score', (req, res) => {
     res.json({ success: true });
 });
 
+// ===== 赛季开始日期 =====
+
+const SEASON_FILE = '/data/season.json';
+
+function readSeasonData() {
+    try {
+        if (fs.existsSync(SEASON_FILE)) {
+            return JSON.parse(fs.readFileSync(SEASON_FILE, 'utf8'));
+        }
+    } catch (e) {
+        console.error('读取赛季数据失败:', e);
+    }
+    return { startDate: '' };
+}
+
+function saveSeasonData(data) {
+    try {
+        fs.writeFileSync(SEASON_FILE, JSON.stringify(data, null, 2));
+        return true;
+    } catch (e) {
+        console.error('保存赛季数据失败:', e);
+        return false;
+    }
+}
+
+// 获取赛季开始日期
+app.get('/api/season', (req, res) => {
+    res.json(readSeasonData());
+});
+
+// 更新赛季开始日期
+app.post('/api/season', (req, res) => {
+    const { startDate } = req.body;
+    saveSeasonData({ startDate: startDate || '' });
+    res.json({ success: true });
+});
+
 app.listen(PORT, () => {
     console.log(`API 服务运行在端口 ${PORT}`);
 });

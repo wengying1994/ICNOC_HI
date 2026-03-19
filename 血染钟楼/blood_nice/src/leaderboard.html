@@ -433,6 +433,14 @@
         <h1>🏆 玩家排名榜</h1>
         <p class="subtitle">镇民获胜+1分，恶魔获胜+2分，积分高的排前面</p>
 
+        <!-- 赛季开始日期 -->
+        <div style="text-align: center; margin-bottom: 15px;">
+            <label style="font-size: 0.9rem; color: var(--text-secondary);">
+                🗓️ 赛季开始：
+                <input type="date" id="seasonStartDate" style="background: var(--bg-card); border: 1px solid rgba(255,255,255,0.2); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; font-size: 0.9rem;" onchange="saveSeasonStartDate()">
+            </label>
+        </div>
+
         <!-- 镇民VS恶魔 -->
         <div class="vs-container">
             <div class="vs-card">
@@ -728,10 +736,38 @@
             document.getElementById('demonsScore').textContent = vsScore.demons;
         }
 
+        // 读取赛季开始日期
+        async function fetchSeasonStartDate() {
+            try {
+                const res = await fetch(`${API_BASE}/season`);
+                const data = await res.json();
+                if (data.startDate) {
+                    document.getElementById('seasonStartDate').value = data.startDate;
+                }
+            } catch (e) {
+                console.error('获取赛季日期失败:', e);
+            }
+        }
+
+        // 保存赛季开始日期
+        async function saveSeasonStartDate() {
+            const date = document.getElementById('seasonStartDate').value;
+            try {
+                await fetch(`${API_BASE}/season`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ startDate: date })
+                });
+            } catch (e) {
+                console.error('保存赛季日期失败:', e);
+            }
+        }
+
         // 页面加载时获取数据
         fetchPlayers().then(renderLeaderboard);
         fetchPlayers().then(renderStorytellerLeaderboard);
         fetchVsScore();
+        fetchSeasonStartDate();
 
         // ===== 头榜说书人 =====
 
