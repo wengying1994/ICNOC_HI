@@ -187,12 +187,13 @@
         }
         
         .win-btn {
-            background: var(--success);
-            color: #000;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.4);
         }
-        
+
         .win-btn:hover {
-            background: #22c55e;
+            background: rgba(255,255,255,0.3);
             transform: scale(1.1);
         }
         
@@ -280,15 +281,187 @@
         .clear-all button:hover {
             text-decoration: underline;
         }
+
+        /* 镇民VS恶魔 */
+        .vs-container {
+            margin-bottom: 30px;
+        }
+
+        .vs-card {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, #1a1a3e 100%);
+            border-radius: 16px;
+            padding: 25px;
+            border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .vs-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+        }
+
+        .vs-title span {
+            margin: 0 15px;
+        }
+
+        .vs-sides {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .vs-side {
+            flex: 1;
+            max-width: 280px;
+            text-align: center;
+        }
+
+        .vs-side-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .vs-side.villagers .vs-side-name {
+            color: var(--success);
+        }
+
+        .vs-side.demons .vs-side-name {
+            color: var(--accent);
+        }
+
+        .vs-score-display {
+            font-size: 4rem;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        .vs-side.villagers .vs-score-display {
+            color: var(--success);
+        }
+
+        .vs-side.demons .vs-score-display {
+            color: var(--accent);
+        }
+
+        .vs-btn-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .vs-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .vs-btn.minus {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .vs-btn.minus:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+
+        .vs-btn.plus {
+            background: var(--success);
+            color: #000;
+        }
+
+        .vs-btn.plus:hover {
+            background: #22c55e;
+            transform: scale(1.1);
+        }
+
+        .vs-side.demons .vs-btn.plus {
+            background: var(--accent);
+        }
+
+        .vs-side.demons .vs-btn.plus:hover {
+            background: var(--accent-hover);
+        }
+
+        .vs-vs {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--warning);
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+
+        .vs-reset-btn {
+            background: transparent;
+            border: 1px solid var(--warning);
+            color: var(--warning);
+            padding: 6px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+
+        .vs-reset-btn:hover {
+            background: var(--warning);
+            color: #000;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <a href="/" class="back-link">← 返回首页</a>
-        
+
         <h1>🏆 玩家排名榜</h1>
-        <p class="subtitle">记录玩家胜负数据，胜利次数多的排前面</p>
-        
+        <p class="subtitle">镇民获胜+1分，恶魔获胜+2分，积分高的排前面</p>
+
+        <!-- 镇民VS恶魔 -->
+        <div class="vs-container">
+            <div class="vs-card">
+                <div class="vs-title">⚔️ <span>镇民</span> VS <span>恶魔</span> ⚔️</div>
+                <div class="vs-sides">
+                    <div class="vs-side villagers">
+                        <div class="vs-side-name">🌿 镇民</div>
+                        <div class="vs-score-display" id="villagersScore">0</div>
+                        <div class="vs-btn-group">
+                            <button class="vs-btn minus" onclick="adjustScore('villagers', -1)">−</button>
+                            <button class="vs-btn plus" onclick="adjustScore('villagers', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="vs-vs">VS</div>
+                    <div class="vs-side demons">
+                        <div class="vs-side-name">👹 恶魔</div>
+                        <div class="vs-score-display" id="demonsScore">0</div>
+                        <div class="vs-btn-group">
+                            <button class="vs-btn minus" onclick="adjustScore('demons', -1)">−</button>
+                            <button class="vs-btn plus" onclick="adjustScore('demons', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <button class="vs-reset-btn" onclick="resetVsScore()">🔄 重置比分</button>
+                </div>
+            </div>
+        </div>
+
         <!-- 排行榜 -->
         <div class="card">
             <table>
@@ -296,7 +469,7 @@
                     <tr>
                         <th class="rank-col">排名</th>
                         <th class="name-col">玩家</th>
-                        <th class="score-col">胜利次数</th>
+                        <th class="score-col">胜利积分</th>
                         <th class="action-col">操作</th>
                     </tr>
                 </thead>
@@ -316,8 +489,30 @@
                 <input type="text" id="playerName" placeholder="输入玩家称呼 (如: 大神炅炅)">
                 <button class="btn btn-primary" onclick="addPlayer()">添加</button>
             </div>
-            
+        </div>
 
+        <!-- 头榜说书人 -->
+        <div class="card">
+            <h3 style="margin-bottom: 15px; color: var(--warning);">🎭 头榜说书人</h3>
+            <div class="add-player-form" style="margin-bottom: 15px;">
+                <input type="text" id="storytellerName" placeholder="输入玩家称呼">
+                <button class="btn btn-primary" onclick="addStorytellerPlayer()">添加</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="rank-col">排名</th>
+                        <th class="name-col">玩家</th>
+                        <th class="score-col">说书次数</th>
+                        <th class="action-col">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="storytellerBody">
+                </tbody>
+            </table>
+            <div class="empty-state" id="storytellerEmpty" style="display: none;">
+                暂无玩家数据，请添加玩家
+            </div>
         </div>
     </div>
     
@@ -367,14 +562,17 @@
             }
         }
         
-        // 增加胜利次数
+        // 增加胜利积分（选择镇民或恶魔获胜）
         async function addWin(index) {
             const player = players[index];
+            const choice = prompt('选择获胜方：\n1 = 镇民获胜（+1分）\n2 = 恶魔获胜（+2分）\n\n取消则不加分', '1');
+            if (choice === null) return;
+            const points = choice === '2' ? 2 : 1;
             try {
                 await fetch(`${API_BASE}/players/${encodeURIComponent(player.name)}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ wins: player.wins + 1 })
+                    body: JSON.stringify({ wins: player.wins + points })
                 });
                 await fetchPlayers();
                 renderLeaderboard();
@@ -462,9 +660,9 @@
                     <td class="player-name">${escapeHtml(player.name)}</td>
                     <td>
                         <div class="score-controls">
-                            <button class="score-btn lose-btn" onclick="subtractWin(${index})" title="胜利-1">-</button>
+                            <button class="score-btn lose-btn" onclick="subtractWin(${index})" title="积分-1">−</button>
                             <span class="score-num win-num">${player.wins}</span>
-                            <button class="score-btn win-btn" onclick="addWin(${index})" title="胜利+1">+</button>
+                            <button class="score-btn win-btn" onclick="addWin(${index})" title="选择获胜方加积分">+</button>
                         </div>
                     </td>
                     <td>
@@ -482,8 +680,188 @@
             return div.innerHTML;
         }
         
+        let vsScore = { villagers: 0, demons: 0 };
+
+        // 从服务器获取VS比分
+        async function fetchVsScore() {
+            try {
+                const res = await fetch(`${API_BASE}/vs-score`);
+                vsScore = await res.json();
+                renderVsScore();
+            } catch (e) {
+                console.error('获取VS比分失败:', e);
+            }
+        }
+
+        // 调整比分
+        async function adjustScore(side, delta) {
+            try {
+                const res = await fetch(`${API_BASE}/vs-score`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ side, delta })
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                vsScore = { ...vsScore, [side]: data.score[side] };
+                renderVsScore();
+            } catch (e) {
+                console.error('调整比分失败:', e);
+            }
+        }
+
+        // 重置比分
+        async function resetVsScore() {
+            if (!confirm('确定重置镇民VS恶魔的比分吗？')) return;
+            try {
+                await fetch(`${API_BASE}/vs-score`, { method: 'DELETE' });
+                vsScore = { villagers: 0, demons: 0 };
+                renderVsScore();
+            } catch (e) {
+                console.error('重置比分失败:', e);
+            }
+        }
+
+        // 渲染VS比分
+        function renderVsScore() {
+            document.getElementById('villagersScore').textContent = vsScore.villagers;
+            document.getElementById('demonsScore').textContent = vsScore.demons;
+        }
+
         // 页面加载时获取数据
         fetchPlayers().then(renderLeaderboard);
+        fetchPlayers().then(renderStorytellerLeaderboard);
+        fetchVsScore();
+
+        // ===== 头榜说书人 =====
+
+        function renderStorytellerLeaderboard() {
+            const tbody = document.getElementById('storytellerBody');
+            const emptyState = document.getElementById('storytellerEmpty');
+
+            // 按说书次数降序排列
+            const sorted = [...players].sort((a, b) => (b.storyteller || 0) - (a.storyteller || 0));
+
+            if (sorted.length === 0 || sorted.every(p => !p.storyteller)) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            // 只显示有说书记录的玩家
+            const withRecords = sorted.filter(p => p.storyteller > 0);
+
+            tbody.innerHTML = withRecords.map((player, i) => {
+                const realIndex = players.findIndex(p => p.name === player.name);
+                const rankClass = i < 3 ? `rank-${i + 1}` : '';
+                return `
+                <tr>
+                    <td class="rank ${rankClass}">#${i + 1}</td>
+                    <td class="player-name">${escapeHtml(player.name)}</td>
+                    <td>
+                        <div class="score-controls">
+                            <button class="score-btn lose-btn" onclick="subtractStoryteller(${realIndex})" title="次数-1">−</button>
+                            <span class="score-num win-num">${player.storyteller || 0}</span>
+                            <button class="score-btn win-btn" onclick="addStoryteller(${realIndex})" title="次数+1">+</button>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="delete-btn" onclick="deletePlayerByName('${escapeHtml(player.name)}')">删除</button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        async function subtractStoryteller(index) {
+            const player = players[index];
+            if ((player.storyteller || 0) <= 0) return;
+            try {
+                await fetch(`${API_BASE}/players/${encodeURIComponent(player.name)}/storyteller`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ delta: -1 })
+                });
+                await fetchPlayers();
+                renderLeaderboard();
+                renderStorytellerLeaderboard();
+            } catch (e) {
+                console.error('操作失败:', e);
+            }
+        }
+
+        async function addStoryteller(index) {
+            const player = players[index];
+            try {
+                await fetch(`${API_BASE}/players/${encodeURIComponent(player.name)}/storyteller`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ delta: 1 })
+                });
+                await fetchPlayers();
+                renderLeaderboard();
+                renderStorytellerLeaderboard();
+            } catch (e) {
+                console.error('操作失败:', e);
+            }
+        }
+
+        // 添加说书人玩家（如果玩家已存在则直接用，不存在则报错）
+        async function addStorytellerPlayer() {
+            const nameInput = document.getElementById('storytellerName');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                alert('请输入玩家称呼');
+                return;
+            }
+
+            // 检查玩家是否存在
+            const exists = players.some(p => p.name === name);
+            if (!exists) {
+                alert('该玩家不存在，请先在上面的「添加玩家」中添加');
+                return;
+            }
+
+            // 给该玩家说书次数+1（或初始化为1）
+            const player = players.find(p => p.name === name);
+            const delta = (player.storyteller || 0) === 0 ? 1 : 0;
+            if (delta === 0) {
+                alert('该玩家已在说书人列表中');
+                return;
+            }
+
+            try {
+                await fetch(`${API_BASE}/players/${encodeURIComponent(name)}/storyteller`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ delta: 1 })
+                });
+                nameInput.value = '';
+                await fetchPlayers();
+                renderLeaderboard();
+                renderStorytellerLeaderboard();
+            } catch (e) {
+                alert('添加失败: ' + e.message);
+            }
+        }
+
+        // 按名字删除玩家
+        async function deletePlayerByName(name) {
+            if (!confirm(`确定删除玩家「${name}」吗？`)) return;
+            try {
+                await fetch(`${API_BASE}/players/${encodeURIComponent(name)}`, {
+                    method: 'DELETE'
+                });
+                await fetchPlayers();
+                renderLeaderboard();
+                renderStorytellerLeaderboard();
+            } catch (e) {
+                alert('删除失败: ' + e.message);
+            }
+        }
     </script>
 </body>
 </html>

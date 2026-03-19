@@ -29,7 +29,9 @@ services:
 
   # 血染钟楼后端 API
   blood-api:
-    build: ./血染钟楼/blood_nice
+    build:
+      context: ./血染钟楼/blood_nice
+      dockerfile: Dockerfile.api
     container_name: blood-api
     volumes:
       - blood-data:/data
