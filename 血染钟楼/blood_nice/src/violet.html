@@ -108,17 +108,17 @@
 
         .main-content {
             display: flex;
+            flex-direction: column;
             min-height: calc(100vh - 200px);
         }
 
         .sidebar {
-            width: 280px;
+            width: 100%;
             background: var(--bg-secondary);
             padding: 20px;
-            overflow-y: auto;
-            max-height: calc(100vh - 200px);
-            position: sticky;
-            top: 80px;
+            max-height: none;
+            position: relative;
+            top: 0;
         }
 
         .sidebar h3 {
@@ -126,7 +126,7 @@
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin: 20px 0 10px 0;
+            margin: 15px 0 10px 0;
             padding-left: 10px;
         }
 
@@ -139,24 +139,28 @@
         .category-minion { border-left: 3px solid var(--minion); }
         .category-demon { border-left: 3px solid #dc2626; }
 
+        .char-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
         .char-btn {
-            display: block;
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 8px;
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 14px;
             background: var(--bg-card);
             border: none;
             border-radius: 8px;
             color: var(--text-primary);
-            text-align: left;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .char-btn:hover {
             background: var(--bg-card-hover);
-            transform: translateX(5px);
+            transform: translateY(-2px);
         }
 
         .char-btn.active {
@@ -165,7 +169,7 @@
         }
 
         .char-btn .emoji {
-            margin-right: 8px;
+            margin-right: 6px;
         }
 
         .detail-panel {
@@ -337,20 +341,6 @@
             color: var(--text-secondary);
         }
 
-        @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                max-height: none;
-                position: relative;
-                top: 0;
-            }
-            .detail-panel {
-                padding: 20px;
-            }
-        }
     </style>
 </head>
 <body>
