@@ -1,34 +1,27 @@
 http:
   routers:
-    blood-crypt:
-      rule: "PathPrefix(`/blood-crypt`)"
-      service: blood-crypt
-      middlewares:
-        - blood-crypt-stripprefix
+    blood-web:
+      rule: "PathPrefix(`/blood-crypt`) || PathPrefix(`/leaderboard`) || PathPrefix(`/room`)"
+      service: blood-web
       priority: 50
-    report-platform:
-      rule: "PathPrefix(`/report-platform`)"
-      service: report-platform
-      middlewares:
-        - report-platform-stripprefix
-      priority: 50
+    blood-api:
+      rule: "PathPrefix(`/api`)"
+      service: blood-api
+    portal:
+      rule: "PathPrefix(`/`)"
+      service: portal
+      priority: 1
 
   services:
-    blood-crypt:
+    blood-web:
       loadBalancer:
         servers:
-          - url: "http://blood-crypt:80"
-    report-platform:
+          - url: "http://blood-web:80"
+    blood-api:
       loadBalancer:
         servers:
-          - url: "http://report-platform:80"
-
-  middlewares:
-    blood-crypt-stripprefix:
-      stripPrefix:
-        prefixes:
-          - /blood-crypt
-    report-platform-stripprefix:
-      stripPrefix:
-        prefixes:
-          - /report-platform
+          - url: "http://blood-api:3000"
+    portal:
+      loadBalancer:
+        servers:
+          - url: "http://portal:80"
