@@ -1,1 +1,946 @@
-<!-- loading -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>紫罗兰·梦殒春宵 - 角色说明书</title>
+    <style>
+        :root {
+            --bg-primary: #1a0a2e;
+            --bg-secondary: #2d1b4e;
+            --bg-card: #3d2a5c;
+            --bg-card-hover: #4a3580;
+            --text-primary: #f0e6ff;
+            --text-secondary: #b8a0d0;
+            --accent: #9333ea;
+            --accent-light: #c084fc;
+            --townfolk: #3b82f6;
+            --outsider: #f59e0b;
+            --minion: #ef4444;
+            --demon: #7c2d12;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(147, 51, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(147, 51, 234, 0.1) 0%, transparent 50%);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            padding: 20px 30px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(147, 51, 234, 0.3);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #c084fc 0%, #9333ea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+        }
+
+        .intro {
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .intro h2 {
+            font-size: 2rem;
+            color: var(--accent-light);
+            margin-bottom: 15px;
+        }
+
+        .intro .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .intro p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .difficulty {
+            display: inline-block;
+            background: var(--bg-card);
+            padding: 8px 20px;
+            border-radius: 20px;
+            color: var(--accent-light);
+            margin: 15px 0;
+        }
+
+        .main-content {
+            display: flex;
+            min-height: calc(100vh - 200px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+            position: sticky;
+            top: 80px;
+        }
+
+        .sidebar h3 {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 20px 0 10px 0;
+            padding-left: 10px;
+        }
+
+        .sidebar h3:first-child {
+            margin-top: 0;
+        }
+
+        .category-townfolk { border-left: 3px solid var(--townfolk); }
+        .category-outsider { border-left: 3px solid var(--outsider); }
+        .category-minion { border-left: 3px solid var(--minion); }
+        .category-demon { border-left: 3px solid #dc2626; }
+
+        .char-btn {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: var(--bg-card);
+            border: none;
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .char-btn:hover {
+            background: var(--bg-card-hover);
+            transform: translateX(5px);
+        }
+
+        .char-btn.active {
+            background: var(--accent);
+            box-shadow: 0 0 15px rgba(147, 51, 234, 0.5);
+        }
+
+        .char-btn .emoji {
+            margin-right: 8px;
+        }
+
+        .detail-panel {
+            flex: 1;
+            padding: 30px 40px;
+            overflow-y: auto;
+        }
+
+        .detail-panel:empty::before {
+            content: "👈 请从左侧选择一个角色查看详情";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .char-detail {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .char-detail.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .char-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--bg-card);
+        }
+
+        .char-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-right: 20px;
+        }
+
+        .char-icon.townfolk { background: linear-gradient(135deg, var(--townfolk), #1d4ed8); }
+        .char-icon.outsider { background: linear-gradient(135deg, var(--outsider), #d97706); }
+        .char-icon.minion { background: linear-gradient(135deg, var(--minion), #b91c1c); }
+        .char-icon.demon { background: linear-gradient(135deg, #dc2626, #7c2d12); }
+
+        .char-title h2 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .char-title .type {
+            font-size: 0.9rem;
+            padding: 4px 12px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .type.townfolk { background: var(--townfolk); color: white; }
+        .type.outsider { background: var(--outsider); color: black; }
+        .type.minion { background: var(--minion); color: white; }
+        .type.demon { background: #dc2626; color: white; }
+
+        .char-quote {
+            font-style: italic;
+            color: var(--text-secondary);
+            padding: 15px 20px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .char-section {
+            margin-bottom: 25px;
+        }
+
+        .char-section h4 {
+            font-size: 1.1rem;
+            color: var(--accent-light);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .char-section h4::before {
+            content: "◆";
+            margin-right: 8px;
+            font-size: 0.7rem;
+        }
+
+        .char-section p, .char-section li {
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        .char-section ul {
+            padding-left: 25px;
+        }
+
+        .char-section li {
+            margin-bottom: 8px;
+        }
+
+        .ability-box {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+
+        .example-box {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .example-box h5 {
+            color: var(--accent-light);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .tips-box {
+            background: rgba(147, 51, 234, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px dashed var(--accent);
+        }
+
+        .tips-box li {
+            margin-bottom: 10px;
+            padding-left: 5px;
+        }
+
+        .search-box {
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                max-height: none;
+                position: relative;
+                top: 0;
+            }
+            .detail-panel {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>💜 紫罗兰·梦殒春宵</h1>
+        <a href="/blood-crypt/" class="back-btn">← 返回首页</a>
+    </header>
+
+    <div class="intro">
+        <h2>梦殒春宵</h2>
+        <p class="subtitle">支持7-15人 / 推荐8-12人</p>
+        <div class="difficulty">🎯 难度: 中等</div>
+        <p>生机勃勃的春天已然过去，温暖迷人的夏天悄然来临。在人们沉湎于纸醉金迷和灯红酒绿时，黑暗势力却悄然崛起。良辰已至......梦殒春宵。</p>
+        <p>善良的角色每晚都能得到惊人的信息。然而，邪恶阵营能够带来的威胁也多种多样，并且可以制造巨大的混乱。</p>
+    </div>
+
+    <div class="main-content">
+        <aside class="sidebar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 搜索角色..." oninput="filterCharacters()">
+            </div>
+
+            <h3 class="category-townfolk">镇民 (Townfolk)</h3>
+            <div id="townfolkList"></div>
+
+            <h3 class="category-outsider">外来者 (Outsider)</h3>
+            <div id="outsiderList"></div>
+
+            <h3 class="category-minion">爪牙 (Minion)</h3>
+            <div id="minionList"></div>
+
+            <h3 class="category-demon">恶魔 (Demon)</h3>
+            <div id="demonList"></div>
+        </aside>
+
+        <main class="detail-panel" id="detailPanel"></main>
+    </div>
+
+    <script>
+        const characters = [
+            // 镇民
+            {
+                id: "clockmaker",
+                name: "钟表匠",
+                emoji: "🕐",
+                category: "townfolk",
+                quote: "不要打扰我。时钟的滴答声必须延续下去，它的每一圈循环都象征着生命...",
+                ability: "在你的首个夜晚，你会得知恶魔与爪牙之间最近的距离。(邻座的玩家距离为1)",
+                examples: [
+                    "方古坐在麻脸巫婆旁边。钟表匠得知了\"1\"。",
+                    "方古与两名旅行者相邻，一善一恶。洗脑师与其中一名旅行者相邻。在第一个晚上，钟表匠得知了\"2\"。"
+                ],
+                howToPlay: "在第一个夜晚，唤醒钟表匠。对他用手势比划数字来表示恶魔与爪牙之间最近的距离(1，2，3等)。让钟表匠重新入睡。",
+                tips: [
+                    "你不必立即提供你的信息;等待一两天以便你可以在邪恶阵营放松警惕的时候观察其他玩家来发现可疑之处。",
+                    "如果你能找出一个爪牙那么你的信息将会变得非常有用。弄清楚谁是爪牙，你就可以确定谁更有嫌疑是恶魔。",
+                    "如果你得到一个特别大的数字(>3)，那么爪牙们很可能坐的很近并离恶魔很远。",
+                    "所有你即将面对的爪牙都有明显的表现，也就是说即使他们死了，也会有明显的现象。"
+                ]
+            },
+            {
+                id: "dreamer",
+                name: "筑梦师",
+                emoji: "💭",
+                category: "townfolk",
+                quote: "我记得有钟表匠......天空是红色的，有不规则的三角形不断从天上坠落下来...",
+                ability: "每个夜晚，你要选择除你及旅行者以外的一名玩家:你会得知一个善良角色和一个邪恶角色，该玩家是其中一个角色。",
+                examples: [
+                    "筑梦师选择一名玩家，该玩家是畸形秀演员。筑梦师得知该玩家是畸形秀演员或洗脑师。",
+                    "筑梦师选择了一名获得了卖花女孩能力的哲学家。筑梦师得知该玩家要么是哲学家，要么是亡骨魔。"
+                ],
+                howToPlay: "每个夜晚，唤醒筑梦师。让他指向除自己和旅行者外的任意一名玩家。如果被选择的玩家的真实角色是镇民或外来者，向筑梦师展示他的真实角色和任意一个爪牙或恶魔角色标记。让筑梦师重新入睡。",
+                tips: [
+                    "每次你选择一名玩家，你就会得知他潜在的一种邪恶角色的可能性。请关注这些信息。",
+                    "你的信息可以绝佳的辨识出是否受到涡流或诺-达鲺影响。",
+                    "试着去选择没有和你邻座的玩家。如果你和诺-达鲺邻座，你就会中毒。",
+                    "在游戏早期提供你的信息将更有帮助。",
+                    "你永远不会得到涡流这个角色，因为如果涡流在场你必定获得错误信息。"
+                ]
+            },
+            {
+                id: "snakecharmer",
+                name: "舞蛇人",
+                emoji: "🐍",
+                category: "townfolk",
+                quote: "这位老爷.....虽然我的烟斗是金色的，虽然我只要一首曲子就能驯服最狂野的灯神，但我只是一个卑贱的舞蛇人罢了...",
+                ability: "每个夜晚，你要选择一名存活的玩家:如果你选中了恶魔，你和他交换角色和阵营，然后他中毒。",
+                examples: [
+                    "舞蛇人选择的玩家是亡骨魔。舞蛇人立即变成邪恶的亡骨魔，曾经是亡骨魔的玩家变成善良的舞蛇人并中毒。"
+                ],
+                howToPlay: "每个夜晚，唤醒舞蛇人。让他指向任意一名存活玩家。如果被选择的玩家不是恶魔，则无事发生。如果被选择的玩家是恶魔，旧的舞蛇人变为新的(邪恶)恶魔。让新恶魔重新入睡。",
+                tips: [
+                    "舞蛇人存在双重可能性。在任何可能的时候，你可能变为邪恶转而开始背叛你的队伍。",
+                    "谨慎一点;只选择少数玩家来确认不是恶魔。瞄准那些你认为会存活一段时间的玩家。",
+                    "大胆一点;选择尽可能多的玩家，你确认不是恶魔的玩家越多你就越强大!",
+                    "不要告诉任何人你是舞蛇人，除非你确信你自己不会变为恶魔。"
+                ]
+            },
+            {
+                id: "mathematician",
+                name: "数学家",
+                emoji: "🔢",
+                category: "townfolk",
+                quote: "任何连续的，且能进行定量初等运算的形式系统X，都具有不完全性...",
+                ability: "每个夜晚，你会得知有多少名玩家的能力因为其他角色的能力而未正常生效。(从上个黎明到你被唤醒时)",
+                examples: [
+                    "中毒的博学者得知了两条正确信息。当晚，数学家得知了\"1\"，因为舞蛇人和杂耍艺人的能力没有出现异常，但博学者得知的其中一条信息原本应该是错误的。"
+                ],
+                howToPlay: "每当一名玩家的角色能力由于其他角色的能力而未正常生效时，在该玩家的角色标记旁放置\"未正常生效\"提示标记。每个夜晚，唤醒数学家。对他用手势比划数字。让数学家重新入睡。",
+                tips: [
+                    "你的信息是很有用的，但前提是你得弄清楚其他人都做了什么。",
+                    "注意你的信息可能会受到游戏进程改变，如果你得到的信息突然变化，请保持警惕。",
+                    "得到\"0\"的信息是非常棒的，因为这意味着没有人会获得错误信息或者会发生能力异常。",
+                    "与其他镇民不同，数学家可以不必害怕站出来说明自己的角色。"
+                ]
+            },
+            {
+                id: "flowergirl",
+                name: "卖花女孩",
+                emoji: "🌸",
+                category: "townfolk",
+                quote: "昨天，我的紫罗兰凋谢了。今天，我的罂粟花盛开了。",
+                ability: "每个夜晚*，你会得知在今天白天时是否有恶魔投过票。",
+                examples: [
+                    "今天白天有一项提名。但恶魔没有参与投票。那天晚上，卖花女孩得知了\"否\"。",
+                    "今天白天共有三项提名。恶魔在第二次提名投票，没有人被处决。那天晚上，卖花女孩得知了\"是\"。"
+                ],
+                howToPlay: "每个黎明，在卖花女孩角色标记旁放置\"恶魔未投票\"提示标记。除首个夜晚以外的每个夜晚，唤醒卖花女孩。如果被标记为\"恶魔未投票\"，摇头告知否。如果被标记为\"恶魔已投票\"，点头告知是。",
+                tips: [
+                    "注意!你需要掌握每天都有谁参与投票了，否则你的信息就不会有太大用处。",
+                    "相比于经常投票的人，对那些不投票的人留个心眼。",
+                    "你的能力可以让你侦查到恶魔，所以你会成为邪恶阵营比较优先去解决的目标。"
+                ]
+            },
+            {
+                id: "towncrier",
+                name: "城镇公告员",
+                emoji: "📢",
+                category: "townfolk",
+                quote: "号外!号外!迷宫中的巫术!天才博学者揭露了一切谜团!",
+                ability: "每个夜晚*，你会得知在今天白天时是否有爪牙发起过提名。",
+                examples: [
+                    "今天白天，仅有一名镇民玩家发起提名。当晚，城镇公告员得知了\"否\"。",
+                    "今天白天，有四名玩家发起提名。其中两名玩家是爪牙。当晚，城镇公告员得知了\"是\"。"
+                ],
+                howToPlay: "每个黎明，在城镇公告员角色标记旁放置\"爪牙未提名\"提示标记。除了第一个夜晚的每个夜晚都唤醒城镇公告员。如果被标记为\"爪牙未提名\"，摇头告知否。如果被标记为\"爪牙已提名\"，点头告知是。",
+                tips: [
+                    "注意每天都有谁发起了提名!",
+                    "尽可能多的让不同的人去提名，提名的人越多你就越能发挥自己的能力去推动游戏的进程。",
+                    "如果你在游戏早期发现了一个爪牙，那么你们最好是把他处决了。"
+                ]
+            },
+            {
+                id: "oracle",
+                name: "神谕者",
+                emoji: "🔮",
+                category: "townfolk",
+                quote: "唯有受选者才能凝视面纱之外的光景。亡者躁动不安...",
+                ability: "每个夜晚*，你会得知有多少名死亡的玩家是邪恶的。",
+                examples: [
+                    "第一个白天，卖花女孩被处决。当晚，恶魔杀死了杂耍艺人。神谕者被唤醒并得知\"0\"，因为所有死亡玩家都是善良的。"
+                ],
+                howToPlay: "除了第一个夜晚的每个夜晚，唤醒神谕者。对他用手势比划已死亡的邪恶玩家的数量。让神谕者重新入睡。",
+                tips: [
+                    "只要你的信息是\"0\"，你就可以相信那些已经死去的玩家都是善良的。",
+                    "一旦你得到\"1\"或者更大的信息时，邪恶玩家已经有人死去。",
+                    "大部分在夜晚死亡的玩家是善良的。邪恶的玩家希望自己能尽可能的活下去。"
+                ]
+            },
+            {
+                id: "sage",
+                name: "博学者",
+                emoji: "📚",
+                category: "townfolk",
+                quote: "地上有七十二根火柴...我们相信的事物和他真正看到的不一样...",
+                ability: "每个白天，你可以私下询问说书人以得知两条信息:一个是正确的，一个是错误的。",
+                examples: [
+                    "博学者得知\"所有戴眼镜的玩家都是善良的\"以及\"坐在黑色沙发上的玩家之一是爪牙\"。",
+                    "博学者得知\"恶魔是女性玩家\"和\"小八属于邪恶阵营\"。"
+                ],
+                howToPlay: "每个白天仅限一次，如果博学者要求与你进行私聊，请和他一起离开玩家围成的圆圈。然后以耳语的方式告知博学者一真一假两条信息。",
+                tips: [
+                    "在每天你可以得到一条真信息和一条假信息。",
+                    "有些时候你可以尝试去验证你其中一条的真假，这同样会给你带来很多信息。",
+                    "告诉大家你在每天得到的信息，可以让大家帮助你记住。",
+                    "为了获得更多信息，你需要尽可能的多活几天。"
+                ]
+            },
+            {
+                id: "seamstress",
+                name: "女裁缝",
+                emoji: "🧵",
+                category: "townfolk",
+                quote: "你听到那个穿羊绒大衣的家伙对我们小贝尔说什么了吗?",
+                ability: "每局游戏限一次，在夜晚时，你可以选择除你以外的两名玩家:你会得知他们是否为同一阵营。",
+                examples: [
+                    "在第一个夜晚，女裁缝选择了两名玩家，他们是理发师和钟表匠。因为他俩都是善良的，女裁缝得知\"是\"。"
+                ],
+                howToPlay: "每个夜晚，唤醒女裁缝。她要么摇头不使用能力，要么指向另两名玩家。如果点头代表是(表示这些玩家是同一阵营)，摇头代表否。让女裁缝重新入睡。",
+                tips: [
+                    "你可以过几天再使用你的能力。虽然这有一定的风险。",
+                    "尽快的使用你的能力!你只有一次机会，如果你在还没使用时就死去了，你肯定会为此自责。",
+                    "把能力用在那些你不太了解的人身上!得知两名玩家是否同一阵营是非常强力的。"
+                ]
+            },
+            {
+                id: "philosopher",
+                name: "哲学家",
+                emoji: "🤔",
+                category: "townfolk",
+                quote: "如果你要说什么事情是最真实的?我想是啤酒。痛快喝吧，说不定我们明天就要死了。",
+                ability: "每局游戏限一次，在夜晚时，你可以选择一个善良角色:你获得该角色的能力。如果这个角色在场，他醉酒。",
+                examples: [
+                    "哲学家选择获得筑梦师能力。从现在起，他将在筑梦师应该行动时进行行动。",
+                    "哲学家选择获得了艺术家的能力，但场上已经有一名艺术家。那名艺术家玩家醉酒。"
+                ],
+                howToPlay: "每个夜晚，唤醒哲学家。他要么摇头不使用能力，要么指向角色列表上一个镇民或外来者图标。让哲学家重新入睡。",
+                tips: [
+                    "哲学家最强大之处就是他的能力非常广泛，多才多艺。你可以模仿列表中的任何善良角色!",
+                    "尽早的去使用你的能力通常对你更有用-你越早使用，就可以通过你的能力获得更多信息。",
+                    "选择靠后时间再去使用能力可能会冒很大风险，但是却给了你更多的时间去考虑去获得哪个角色的能力。"
+                ]
+            },
+            {
+                id: "artist",
+                name: "艺术家",
+                emoji: "🎨",
+                category: "townfolk",
+                quote: "天啊!多么美妙的作品!我的作品......对，璀璨夺目!栩栩如生!",
+                ability: "每局游戏限一次，在白天时，你可以私下询问说书人一个是非问题，你会得知该问题的答案。",
+                examples: [
+                    "艺术家问:\"恶魔坐在棕色椅子上吗?\"说书人回答:\"不是\"。",
+                    "艺术家问:\"大壮是镜像双子吗?\"说书人回答,\"是的\"。"
+                ],
+                howToPlay: "在任何一个白天，艺术家都可以要求与你进行私聊。以耳语的方式回答他\"是\"、\"不是\"或\"我不知道\"。",
+                tips: [
+                    "你可以在第一天就尽快的使用你的能力!",
+                    "你可以过几天再使用你的能力。这非常冒险，因为你很可能失去你的能力。",
+                    "如果你问的问题过于具体，那么通常你只会得到一个毫无帮助的\"不是\"。",
+                    "不要被恶魔发现，这样他们就不会在你使用能力之前杀死你。"
+                ]
+            },
+            {
+                id: "juggler",
+                name: "杂耍艺人",
+                emoji: "🎪",
+                category: "townfolk",
+                quote: "下一场表演，我需要一朵花、一袋豆子、一条玩具蛇、一支画笔...",
+                ability: "在你的首个白天，你可以公开猜测任意玩家的角色最多五次。在当晚，你会得知猜测正确的角色数量。",
+                examples: [
+                    "第一个白天，杂耍艺人猜测小明是城镇公告员，小兰是诺-达鲺。当晚，杂耍艺人得知\"2\"。"
+                ],
+                howToPlay: "在第一个白天，拿着魔典进入玩家围成的圆圈内。杂耍艺人最多可以做出五次猜测。当晚，唤醒杂耍艺人。对他用手势比划\"猜测正确\"的数量。",
+                tips: [
+                    "你可以尽可能多的去猜测那些善良角色!",
+                    "猜测一小部分的玩家角色，以获得焦点位玩家的角色信息。",
+                    "一个积极主动的杂耍艺人是恶魔的首要目标。",
+                    "猜错了也不完全是坏事，事实上，错误的信息和正确的信息一样有用!"
+                ]
+            },
+            {
+                id: "sageman",
+                name: "贤者",
+                emoji: "📿",
+                category: "townfolk",
+                quote: "这书山卷海中一定隐藏着秘密，我非常确信!",
+                ability: "如果恶魔杀死了你，在当晚你会被唤醒并得知两名玩家，其中一名是杀死你的那个恶魔。",
+                examples: [
+                    "第二个夜晚，恶魔杀死了贤者。说书人为贤者指出了两名玩家，其中一名是恶魔。"
+                ],
+                howToPlay: "如果贤者被恶魔杀死，唤醒贤者。指向两名玩家，其中一名是杀死贤者的恶魔。让贤者重新入睡。",
+                tips: [
+                    "让自己被恶魔杀死。随便用什么方式，越快越好。",
+                    "如果恶魔杀死了你，那么立刻告诉大家你得到的信息。",
+                    "如果你在夜晚死了但是没有获得信息，这也是个不错的消息!"
+                ]
+            },
+
+            // 外来者
+            {
+                id: "freak",
+                name: "畸形秀演员",
+                emoji: "🎭",
+                category: "outsider",
+                quote: "我不是怪物!我是人!求你了!",
+                ability: "如果你\"疯狂\"地证明自己是外来者，你可能被处决。",
+                examples: [
+                    "在进入第一个白天十秒后，畸形秀演员向其他玩家说他是畸形秀演员。说书人宣布畸形秀演员被立即处决。"
+                ],
+                howToPlay: "在游戏里的任何时间点，如果你认为畸形秀演员\"疯狂\"地证明了他是一名外来者，那么你就可以决定处决畸形秀演员。",
+                tips: [
+                    "不要承认自己是畸形秀演员，甚至不要承认自己是外来者。",
+                    "保持积极，不要沉默。",
+                    "向一两个你相信的玩家秘密的说明自己的角色。然后你就可以去伪装成一个镇民。",
+                    "小心说书人!他会观察你的表现。"
+                ]
+            },
+            {
+                id: "sweetheart",
+                name: "心上人",
+                emoji: "💕",
+                category: "outsider",
+                quote: "我永远也忘不掉她.....永远.",
+                ability: "当你死亡时，会有一名玩家开始醉酒。",
+                examples: [
+                    "心上人死了。数学家现在醉酒了，并可能在夜晚获得错误信息。",
+                    "心上人死了。恶魔现在醉酒了，所以他的攻击无法杀死任何人。"
+                ],
+                howToPlay: "如果心上人死亡，你选择任一玩家醉酒，为他放置\"醉酒\"提示标记。",
+                tips: [
+                    "尽量保证自己不要死亡。",
+                    "你可以伪装成一个恶魔不想攻击的目标。",
+                    "如果你死了，请立即公开你的角色。",
+                    "小心女巫和洗脑师!"
+                ]
+            },
+            {
+                id: "barber",
+                name: "理发师",
+                emoji: "✂️",
+                category: "outsider",
+                quote: "对了，你以前知不知道，理发师和手术医生其实是同一个职业?",
+                ability: "如果你死亡，在当晚恶魔可以选择两名玩家(不能选择其他恶魔)交换角色。",
+                examples: [
+                    "理发师死了。恶魔本来想要交换钟表匠和杂耍艺人，但随后决定什么都不做。",
+                    "理发师死了。恶魔交换了存活的神谕者和死亡的理发师。"
+                ],
+                howToPlay: "如果理发师死亡，为他放置\"今晚理发\"提示标记。在理发师死亡的夜晚，唤醒一名恶魔玩家。恶魔要么摇头，要么指向两名玩家。",
+                tips: [
+                    "尽量不要让自己死亡。你死后会给邪恶团队带来巨大的收益。",
+                    "伪装成一个恶魔不想击杀的目标。",
+                    "帮帮我，我是恶魔，刚刚理发师死了，我该怎么做!"
+                ]
+            },
+            {
+                id: "boob",
+                name: "呆瓜",
+                emoji: "😳",
+                category: "outsider",
+                quote: "哎哟!",
+                ability: "当你得知你死亡时，你要公开选择一名存活的玩家:如果他是邪恶的，你的阵营落败。",
+                examples: [
+                    "恶魔杀死了呆瓜玩家小菜。小菜公开选择了一名玩家，而该玩家是邪恶的恶魔，游戏立即结束，邪恶方获胜。"
+                ],
+                howToPlay: "当呆瓜玩家被宣布死亡时，他必须宣布他是呆瓜，然后选择一名存活玩家。如果他选择了一名邪恶玩家，游戏结束，邪恶阵营获胜。",
+                tips: [
+                    "就像梦殒春宵中几乎所有的外来者一样，你应该尽可能地避免死亡。",
+                    "在你死亡之前，和其他玩家一起努力寻找一个你认为他是善良阵营的玩家。",
+                    "不要选择一名和别人角色重复的玩家。",
+                    "如果你死亡了，并且选择了一个玩家，而游戏并没有结束，你几乎可以肯定那名玩家是个善良的玩家。"
+                ]
+            },
+
+            // 爪牙
+            {
+                id: "mirrortwins",
+                name: "镜像双子",
+                emoji: "👥",
+                category: "minion",
+                quote: "我不是小美!我是小梅!她才是小美!小美才是那个坏人，不是我!",
+                ability: "你与一名对立阵营的玩家互相知道对方是什么角色。如果其中善良玩家被处决，邪恶阵营获胜。如果你们都存活，善良阵营无法获胜。",
+                examples: [
+                    "两个双子都声称是神谕者。邪恶双子被处决，游戏继续。",
+                    "麻脸巫婆将善良的贤者变成镜像双子。善良的双子被处决，邪恶阵营胜利。"
+                ],
+                howToPlay: "初始设置时，在一名善良玩家的角色标记旁放置\"对立双子\"提示标记。在首个夜晚，同时唤醒两名双子。指向邪恶双子，并对善良双子展示邪恶双子的角色标记。",
+                tips: [
+                    "说善良的镜像双子是邪恶的镜像双子(重要的事情说三遍)。",
+                    "声称你和另一个镜像双子是同一个角色。",
+                    "要时刻充满激情，不要放松。",
+                    "如果你是恶魔，可以在某个阶段的夜晚停止杀戮，假装恶魔在那天被处决。"
+                ]
+            },
+            {
+                id: "witch",
+                name: "女巫",
+                emoji: "🧙‍♀️",
+                category: "minion",
+                quote: "山羊之血，三滴落下。一绺头发，怒意迸发...",
+                ability: "每个夜晚，你要选择一名玩家:如果他明天白天发起提名，他死亡。如果只有三名存活的玩家，你失去此能力。",
+                examples: [
+                    "夜晚，女巫诅咒了贤者。下个白天，贤者提名了筑梦师，说书人立即宣布贤者死亡。"
+                ],
+                howToPlay: "每个夜晚，唤醒女巫。让她指向一名玩家。让女巫重新入睡。在被选择的玩家角色标记旁放置\"被诅咒\"提示标记。",
+                tips: [
+                    "让你的目标尽量选择成有很多话要说的玩家。",
+                    "如果你强迫卖花女孩、女裁缝或者神谕者对心上人进行疯狂，他们很难透露出改变局势的相关信息。",
+                    "疯狂是一种能严重阻碍优秀团队找寻恶魔的处罚。"
+                ]
+            },
+            {
+                id: "mindcontroller",
+                name: "洗脑师",
+                emoji: "🧠",
+                category: "minion",
+                quote: "所谓的现实，其实，只是一种想法罢了。具体点来说，是我的想法。",
+                ability: "每个夜晚，你要选择一名玩家和一个善良角色。他明天白天和夜晚需要\"疯狂\"地证明自己是这个角色，不然他可能被处决。",
+                examples: [
+                    "洗脑师使理发师\"疯狂\"地证明他是博学者。第二天，理发师声称自己是博学者。"
+                ],
+                howToPlay: "每个夜晚，唤醒洗脑师。让洗脑师指向一名玩家和角色列表上一个镇民或外来者图标。让洗脑师重新入睡。为这名玩家放置\"疯狂\"提示标记。",
+                tips: [
+                    "疯狂是一种能严重阻碍优秀团队找寻恶魔的处罚，也是一门艺术。",
+                    "有一个非常残忍的行为可以让善良团队陷入困境。",
+                    "故意将你的能力用在邪恶的玩家身上，这会让他们看起来像个受到你的能力影响的好人。"
+                ]
+            },
+            {
+                id: "pockmarkedwitch",
+                name: "麻脸巫婆",
+                emoji: "🦇",
+                category: "minion",
+                quote: "绕釜环行火融融，毒肝腐脏真其中...",
+                ability: "每个夜晚*，你要选择一名玩家和一个角色，如果该角色不在场，他变成该角色。如果因此创造了一个恶魔，当晚的死亡由说书人决定。",
+                examples: [
+                    "麻脸巫婆将卖花女孩变成镜像双子。现在，有一名善良阵营的镜像双子。"
+                ],
+                howToPlay: "除首夜外的每个夜晚，唤醒麻脸巫婆。让她指向一名玩家和角色列表上的一个角色图标。如果她选择的角色不在场，则唤醒所选玩家并展示新角色标记。",
+                tips: [
+                    "你的能力会改变玩家的角色，但不会改变他们的阵营。",
+                    "创造新恶魔是麻脸巫婆的一项独特能力。",
+                    "创造外来者!",
+                    "转变你自己!"
+                ]
+            },
+
+            // 恶魔
+            {
+                id: "fanggu",
+                name: "方古",
+                emoji: "👹",
+                category: "demon",
+                quote: "你那高墙和锐器不过是虚无缥缈的泡影。",
+                ability: "每个夜晚*，你要选择一名玩家:他死亡。被该能力杀死的外来者改为变成邪恶的方古且你代替他死亡，但每局游戏仅能成功转化一次。[+1外来者]",
+                examples: [
+                    "方古攻击并杀死艺术家。下个夜晚，方古攻击了心上人，心上人成为新方古，老方古死亡。"
+                ],
+                howToPlay: "除首个夜晚外的每个夜晚，唤醒方古。让他指向一名玩家。如果被选择的玩家是外来者，且\"限一次\"提示标记不在魔典中，用多出的方古标记替换他的角色标记，且他转为邪恶阵营。",
+                tips: [
+                    "得益于你的恶魔传递的能力，弄明白谁是外来者对你来说是有好处的。",
+                    "让您的爪牙们保持沟通!",
+                    "如果你成为了新的方古，不要惊慌!"
+                ]
+            },
+            {
+                id: "bonedemon",
+                name: "亡骨魔",
+                emoji: "💀",
+                category: "demon",
+                quote: "世间万扉集为一体，世间万匙铸为一身...",
+                ability: "每个夜晚*，你要选择一名玩家:他死亡。被你杀死的爪牙保留他的能力，且与他邻近的两名镇民之一中毒。[-1外来者]",
+                examples: [
+                    "亡骨魔杀死了女巫。下个白天，一名被女巫诅咒的玩家发起了提名，被诅咒的玩家死亡。"
+                ],
+                howToPlay: "除首个夜晚外的每个夜晚，唤醒亡骨魔。让亡骨魔指向一名玩家。如果被选择的玩家是爪牙，距离爪牙顺时针或逆时针最近的镇民玩家中毒。",
+                tips: [
+                    "尽可能早的杀死你的爪牙。如果你在晚上杀死你的爪牙，他们会保留他们的能力。",
+                    "在夜间，尽快杀死一个即将被处决的善良阵营玩家。",
+                    "因为你的存在会使场上减少一个外来者，你知道自己是一个外来者是一个非常容易和有效的伪装方式。"
+                ]
+            },
+            {
+                id: "nodaxi",
+                name: "诺-达鲺",
+                emoji: "🦐",
+                category: "demon",
+                quote: "彼因汝之罪孽，吾已嗅汝之恶臭满溢全身...",
+                ability: "每个夜晚*，你要选择一名玩家:他死亡。与你邻近的两名镇民中毒。",
+                examples: [
+                    "在游戏开始时，诺-达鲺与城镇公告员和舞蛇人相邻，这两名玩家都中毒了。"
+                ],
+                howToPlay: "在为首个夜晚进行准备时，让两名与诺-达鲺邻近的镇民玩家中毒。除首个夜晚外的每个夜晚，唤醒诺-达鲺。让诺-达鲺指向一名玩家。",
+                tips: [
+                    "找到谁是那个与你相邻的镇民。你可能坐在了爪牙、旅行者或者外来者的旁边。",
+                    "在夜里，不要杀害与你相邻的人。因为他们中毒了，他们活得越久，没有中毒的镇民就死的越多。"
+                ]
+            },
+            {
+                id: "whirlpool",
+                name: "涡流",
+                emoji: "🌀",
+                category: "demon",
+                quote: "黑白颠倒，对错不再，左右变换，长短无猜...",
+                ability: "每个夜晚*，你要选择一名玩家:他死亡。镇民玩家的能力都会产生错误信息。如果白天没人被处决，邪恶阵营获胜",
+                examples: [
+                    "涡流杀死了贤者。白天没有人投票或提名，但是畸形秀演员被处决了。当晚，卖花女孩和城镇公告员都得知\"是\"。"
+                ],
+                howToPlay: "只要涡流存活，每当有镇民因为能力需要你提供信息，你就必须提供错误信息。除首个夜晚外的每个夜晚，唤醒涡流。让涡流指向一名玩家。",
+                tips: [
+                    "作为一个恶魔，你有两个非常明显的优势--迫使善良阵营进行处决以及迫使所有镇民的信息为假。",
+                    "提供真实信息来掩盖你涡流能力的存在。",
+                    "如果善良阵营已经一致认为场上存在涡流，不要绝望。"
+                ]
+            }
+        ];
+
+        function renderCharacterLists() {
+            const townfolkList = document.getElementById('townfolkList');
+            const outsiderList = document.getElementById('outsiderList');
+            const minionList = document.getElementById('minionList');
+            const demonList = document.getElementById('demonList');
+
+            characters.forEach(char => {
+                const btn = document.createElement('button');
+                btn.className = 'char-btn';
+                btn.dataset.id = char.id;
+                btn.innerHTML = `<span class="emoji">${char.emoji}</span>${char.name}`;
+                btn.onclick = () => showCharacter(char.id);
+
+                if (char.category === 'townfolk') townfolkList.appendChild(btn);
+                else if (char.category === 'outsider') outsiderList.appendChild(btn);
+                else if (char.category === 'minion') minionList.appendChild(btn);
+                else if (char.category === 'demon') demonList.appendChild(btn);
+            });
+        }
+
+        function showCharacter(id) {
+            document.querySelectorAll('.char-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-id="${id}"]`).classList.add('active');
+
+            const char = characters.find(c => c.id === id);
+            if (!char) return;
+
+            const panel = document.getElementById('detailPanel');
+            const typeLabels = {
+                townfolk: '镇民',
+                outsider: '外来者',
+                minion: '爪牙',
+                demon: '恶魔'
+            };
+
+            panel.innerHTML = `
+                <div class="char-detail active">
+                    <div class="char-header">
+                        <div class="char-icon ${char.category}">${char.emoji}</div>
+                        <div class="char-title">
+                            <h2>${char.name}</h2>
+                            <span class="type ${char.category}">${typeLabels[char.category]}</span>
+                        </div>
+                    </div>
+
+                    <div class="char-quote">"${char.quote}"</div>
+
+                    <div class="ability-box">
+                        <div class="char-section">
+                            <h4>能力</h4>
+                            <p>${char.ability}</p>
+                        </div>
+                    </div>
+
+                    ${char.examples.length > 0 ? `
+                    <div class="example-box">
+                        <h5>📝 范例</h5>
+                        <ul>
+                            ${char.examples.map(ex => `<li>${ex}</li>`).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
+
+                    <div class="char-section">
+                        <h4>运作方式</h4>
+                        <p>${char.howToPlay}</p>
+                    </div>
+
+                    ${char.tips.length > 0 ? `
+                    <div class="tips-box">
+                        <div class="char-section">
+                            <h4>💡 提示与技巧</h4>
+                            <ul>
+                                ${char.tips.map(tip => `<li>${tip}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+
+            panel.scrollTop = 0;
+        }
+
+        function filterCharacters() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.char-btn').forEach(btn => {
+                const name = btn.textContent.toLowerCase();
+                btn.style.display = name.includes(query) ? 'block' : 'none';
+            });
+        }
+
+        // Initialize
+        renderCharacterLists();
+    </script>
+</body>
+</html>
