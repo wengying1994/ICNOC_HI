@@ -138,6 +138,7 @@
         .category-outsider { border-left: 3px solid var(--outsider); }
         .category-minion { border-left: 3px solid var(--minion); }
         .category-demon { border-left: 3px solid #dc2626; }
+        .category-traveler { border-left: 3px solid #10b981; }
 
         .char-list {
             display: flex;
@@ -225,6 +226,7 @@
         .char-icon.outsider { background: linear-gradient(135deg, var(--outsider), #d97706); }
         .char-icon.minion { background: linear-gradient(135deg, var(--minion), #b91c1c); }
         .char-icon.demon { background: linear-gradient(135deg, #dc2626, #7c2d12); }
+        .char-icon.traveler { background: linear-gradient(135deg, #10b981, #059669); }
 
         .char-title h2 {
             font-size: 1.8rem;
@@ -242,6 +244,7 @@
         .type.outsider { background: var(--outsider); color: black; }
         .type.minion { background: var(--minion); color: white; }
         .type.demon { background: #dc2626; color: white; }
+        .type.traveler { background: #10b981; color: white; }
 
         .char-quote {
             font-style: italic;
@@ -374,6 +377,9 @@
 
             <h3 class="category-demon">恶魔 (Demon)</h3>
             <div id="demonList"></div>
+
+            <h3 class="category-traveler">旅行者 (Traveler)</h3>
+            <div id="travelerList"></div>
         </aside>
 
         <main class="detail-panel" id="detailPanel"></main>
@@ -706,6 +712,106 @@
                 ],
                 howToPlay: "除首个夜晚以外的每个夜晚，唤醒小恶魔。让小恶魔指向任意一名玩家。让小恶魔重新入睡。被选择的玩家死亡。如果小恶魔选择在夜里自杀，用多出来的小恶魔标记替换一名存活的爪牙玩家的角色标记，让那名玩家的角色改变为小恶魔。唤醒新的小恶魔，向他展示「你是」信息标记。",
                 tips: ["小恶魔是邪恶阵营的核心，每晚必须谨慎选择攻击目标。", "第一夜会得知两名爪牙，要记住他们的身份并保持联系。", "必要时可以自杀，让爪牙变成新恶魔，但这种情况要慎重使用。", "伪装成镇民是生存的关键，不要过早暴露自己是恶魔。", "注意：如果死亡时还有存活的爪牙，其中一个会变成新恶魔。"]
+            },
+
+            // 旅行者
+            {
+                id: "beggar",
+                name: "乞丐",
+                emoji: "🧣",
+                category: "traveler",
+                quote: "行行好吧，先生？哪怕是一枚硬币，夫人？谢天谢地，上天保佑！你真是个善良的人！",
+                ability: "你只能使用投票标记投票。死亡的玩家可以将他的投票标记给你，如果他这么做，你会得知他的阵营。你不会中毒和醉酒。",
+                examples: [
+                    "乞丐不能投票。在第四个白天，小美将她的投票标记给了乞丐。乞丐现在可以进行一次投票，并且得知了小美是善良的。由于乞丐是邪恶的，所以告诉了其他玩家小美是邪恶的。",
+                    "善良的乞丐有3个投票标记。道哥把他的投票标记给乞丐，乞丐得知道哥是邪恶的。"
+                ],
+                howToPlay: "除非乞丐拥有投票标记，否则乞丐不能投票。乞丐每次投票时都会失去一个投票标记。在白天时，一个已死亡的玩家可以宣布将他的投票标记交给乞丐。",
+                tips: [
+                    "作为善良：你绝对会想知道至少一位玩家的阵营，但是也别太贪了。知道1到2位玩家的阵营也意味着这些善良阵营玩家再也不能投票了。",
+                    "如果你告诉大家这个善良玩家其实是邪恶的，恶魔和他的爪牙可能就会找到你并且告诉你他们是谁。",
+                    "你不能投票。因此当你拿到一枚投票标记时，要非常谨慎地使用他。",
+                    "作为邪恶：尽可能多地了解其他玩家的阵营。你想投多少票就投多少票，这是个强大到足以赢得游戏的能力。"
+                ]
+            },
+            {
+                id: "official",
+                name: "官员",
+                emoji: "📋",
+                category: "traveler",
+                quote: "请在这签名，还有这里，还有这，还...有这。如果每个人的签名都清晰可辨，在今天就应该可以把所有文件都整理统计好。",
+                ability: "每个夜晚，你要选择除你以外的一名玩家：明天白天，他的投票算作三票。",
+                examples: [
+                    "官员选择了小文。下一个白天，当第一次投票正在计票时，说书人数道：1...2...3...4...5...6...7。被提名的玩家在这次处决投票中获得了7票。",
+                    "官员选择了已死亡的道哥。下一个白天，道哥使用了他的投票标记进行投票，他的投票会被算作3票。"
+                ],
+                howToPlay: '每个夜晚，唤醒官员，让官员指向任意一名玩家。用官员的"3票"提示标记那名被选中的玩家。让官员入睡。',
+                tips: [
+                    "作为善良：选择给出你的额外票时，优先选择存活玩家。死亡玩家在剩余游戏中仅剩一票。",
+                    "找到一名你相信的善良玩家，与他们配合协作。",
+                    "你在最后一天是特别致命的——你的能力意味着一个人可以单凭自己就促成一次处决。",
+                    "作为邪恶：不要一直选择邪恶阵营玩家——那样看起来嫌疑太大了。",
+                    "在最后一天选择一名邪恶玩家，有着三倍票数的邪恶玩家能够赢下这场游戏。"
+                ]
+            },
+            {
+                id: "thief",
+                name: "窃贼",
+                emoji: "🔑",
+                category: "traveler",
+                quote: "我可是嘛事儿也没干。昨儿嘛晚我连内个小巷子都没去过！绝不是我偷了布鲁诺镇长的公文包。",
+                ability: "每个夜晚，你要选择除你以外的一名玩家：明天白天他的投票会被算作负数。",
+                examples: [
+                    "窃贼选择了小明。下一个白天，当第一场投票正在计票时，说书人数道：1...2...3...2...3...4...5。被提名的玩家在这次处决投票中获得了5票。",
+                    "窃贼选择了小明。官员也选择了小明。下一个白天，小明的投票会以负3票计入总票数。"
+                ],
+                howToPlay: '每个夜晚，唤醒窃贼，让窃贼指向任意一名玩家。用窃贼的"负票"提示标记那名被选中的玩家。让窃贼入睡。',
+                tips: [
+                    "作为善良：用你的能力去削弱你认为是邪恶的玩家！在晚上秘密挑选一位你怀疑的玩家。",
+                    "武装你的负面能力——选择一位你认为是善良阵营的玩家，然后把你选了他这件事告诉他！",
+                    "变一变你的选择，尤其是当你试着去挑选邪恶玩家时。",
+                    "作为邪恶：选那些已经知道谁是善良谁是邪恶的善良玩家，但别告诉他你已经偷走了他的票。",
+                    "在最后一天，你绝对会想要选一名邪恶玩家，并且让他知道你选了他。"
+                ]
+            },
+            {
+                id: "gunslinger",
+                name: "枪手",
+                emoji: "🔫",
+                category: "traveler",
+                quote: "是时候得有人自己动手了。那个人...就是我。",
+                ability: "每个白天，当首次投票被统计后，你可以选择一名刚投过票的玩家：他死亡。",
+                examples: [
+                    "小恶魔被提名了。场上还有十名玩家存活，五名玩家投票给了小恶魔，所以小恶魔即将被处决。枪手选择并杀死了一名刚投过票的玩家。",
+                    "玩家们流放了替罪羊。然后管家被提名并在处决投票中获得1票。枪手选择并杀死了那名唯一投了票的玩家。"
+                ],
+                howToPlay: "每个白天，在首次处决投票被统计后，枪手可以宣布他想使用他的能力。如果他这么做，让他指向任何一名刚刚投过票的玩家。被选中的玩家死亡。",
+                tips: [
+                    "作为善良：每个白天，你都有机会杀死一名玩家。充分利用这个机会。",
+                    "记得留意场上的氛围。有些时候，善良玩家不会希望你在每个白天都杀死一位玩家。",
+                    "有几个无辜的旁观者死亡也无所谓。不要害怕带走一个被认定的送葬者或者是一个看起来有嫌疑的圣徒。",
+                    "作为邪恶：像善良阵营的枪手一样，每天都击杀一位玩家是最好的选择。",
+                    "鼓励恶魔投票。因为你不会杀死他，他可以随意投票。"
+                ]
+            },
+            {
+                id: "scapegoat",
+                name: "替罪羊",
+                emoji: "🐐",
+                category: "traveler",
+                quote: "晚上好！感谢你们邀请我来舞厅。虽然我不是本地人，但你们看起来个个都慈眉善目的，我的天呐。",
+                ability: "如果你的阵营的一名玩家被处决，你可能会代替他被处决。",
+                examples: [
+                    "在占卜师即将被处决的时候，说书人决定由替罪羊代替占卜师被处决。因此占卜师不会死亡而替罪羊死亡。",
+                    "在投毒者即将被处决的时候，说书人决定由邪恶的替罪羊代替投毒者被处决。"
+                ],
+                howToPlay: "如果一名与替罪羊同阵营的玩家即将被处决，你可以选择由替罪羊来代替该玩家被处决。替罪羊会因此死亡。",
+                tips: [
+                    "作为善良：尽你所能，保持存活。低调一点，别让恶魔攻击你。",
+                    "如果说书人宣布你要替一名被处决者死亡，这简直太棒了！偷偷与你救下的那名玩家交流。",
+                    "作为邪恶：尽你所能，保持存活。为了让恶魔不杀你，你要么去告诉恶魔你是邪恶阵营的，要么就给他捎个信。",
+                    "如果说书人宣布你要替一名被处决者死亡，偷偷与你救下的那名玩家交流，就像你是个善良阵营玩家那样做。"
+                ]
             }
         ];
 
@@ -714,6 +820,7 @@
             const outsiderList = document.getElementById('outsiderList');
             const minionList = document.getElementById('minionList');
             const demonList = document.getElementById('demonList');
+            const travelerList = document.getElementById('travelerList');
 
             characters.forEach(char => {
                 const btn = document.createElement('button');
@@ -726,6 +833,7 @@
                 else if (char.category === 'outsider') outsiderList.appendChild(btn);
                 else if (char.category === 'minion') minionList.appendChild(btn);
                 else if (char.category === 'demon') demonList.appendChild(btn);
+                else if (char.category === 'traveler') travelerList.appendChild(btn);
             });
         }
 
@@ -741,7 +849,8 @@
                 townfolk: '镇民',
                 outsider: '外来者',
                 minion: '爪牙',
-                demon: '恶魔'
+                demon: '恶魔',
+                traveler: '旅行者'
             };
 
             panel.innerHTML = `
