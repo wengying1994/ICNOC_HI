@@ -765,20 +765,29 @@
 
         // 页面加载时获取数据
         fetchPlayers().then(renderLeaderboard);
-        fetchPlayers().then(renderStorytellerLeaderboard);
+        fetchStorytellers().then(renderStorytellerLeaderboard);
         fetchVsScore();
         fetchSeasonStartDate();
 
-        // ===== 头榜说书人 =====
+        // ===== 头榜说书人（独立数据） =====
+
+        let storytellers = [];
+
+        async function fetchStorytellers() {
+            try {
+                const res = await fetch(`${API_BASE}/storytellers`);
+                storytellers = await res.json();
+            } catch (e) {
+                console.error('获取说书人数据失败:', e);
+                storytellers = [];
+            }
+        }
 
         function renderStorytellerLeaderboard() {
             const tbody = document.getElementById('storytellerBody');
             const emptyState = document.getElementById('storytellerEmpty');
 
-            // 按说书次数降序排列
-            const sorted = [...players].sort((a, b) => (b.storyteller || 0) - (a.storyteller || 0));
-
-            if (sorted.length === 0 || sorted.every(p => !p.storyteller)) {
+            if (storytellers.length === 0) {
                 tbody.innerHTML = '';
                 emptyState.style.display = 'block';
                 return;
@@ -786,65 +795,71 @@
 
             emptyState.style.display = 'none';
 
-            // 只显示有说书记录的玩家
-            const withRecords = sorted.filter(p => p.storyteller > 0);
-
-            tbody.innerHTML = withRecords.map((player, i) => {
-                const realIndex = players.findIndex(p => p.name === player.name);
+            tbody.innerHTML = storytellers.map((s, i) => {
                 const rankClass = i < 3 ? `rank-${i + 1}` : '';
                 return `
                 <tr>
                     <td class="rank ${rankClass}">#${i + 1}</td>
-                    <td class="player-name">${escapeHtml(player.name)}</td>
+                    <td class="player-name">${escapeHtml(s.name)}</td>
                     <td>
                         <div class="score-controls">
-                            <button class="score-btn lose-btn" onclick="subtractStoryteller(${realIndex})" title="次数-1">−</button>
-                            <span class="score-num win-num">${player.storyteller || 0}</span>
-                            <button class="score-btn win-btn" onclick="addStoryteller(${realIndex})" title="次数+1">+</button>
+                            <button class="score-btn lose-btn" onclick="subtractStoryteller('${escapeHtml(s.name)}')" title="次数-1">−</button>
+                            <span class="score-num win-num">${s.count}</span>
+                            <button class="score-btn win-btn" onclick="addStorytellerByName('${escapeHtml(s.name)}')" title="次数+1">+</button>
                         </div>
                     </td>
                     <td>
-                        <button class="delete-btn" onclick="deletePlayerByName('${escapeHtml(player.name)}')">删除</button>
+                        <button class="delete-btn" onclick="deleteStoryteller('${escapeHtml(s.name)}')">删除</button>
                     </td>
                 </tr>
                 `;
             }).join('');
         }
 
-        async function subtractStoryteller(index) {
-            const player = players[index];
-            if ((player.storyteller || 0) <= 0) return;
+        async function subtractStoryteller(name) {
+            const s = storytellers.find(x => x.name === name);
+            if (!s || s.count <= 0) return;
             try {
-                await fetch(`${API_BASE}/players/${encodeURIComponent(player.name)}/storyteller`, {
+                await fetch(`${API_BASE}/storytellers`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ delta: -1 })
+                    body: JSON.stringify({ name, delta: -1 })
                 });
-                await fetchPlayers();
-                renderLeaderboard();
+                await fetchStorytellers();
                 renderStorytellerLeaderboard();
             } catch (e) {
                 console.error('操作失败:', e);
             }
         }
 
-        async function addStoryteller(index) {
-            const player = players[index];
+        async function addStorytellerByName(name) {
             try {
-                await fetch(`${API_BASE}/players/${encodeURIComponent(player.name)}/storyteller`, {
+                await fetch(`${API_BASE}/storytellers`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ delta: 1 })
+                    body: JSON.stringify({ name })
                 });
-                await fetchPlayers();
-                renderLeaderboard();
+                await fetchStorytellers();
                 renderStorytellerLeaderboard();
             } catch (e) {
                 console.error('操作失败:', e);
             }
         }
 
-        // 添加说书人玩家（如果玩家已存在则直接用，不存在则报错）
+        async function deleteStoryteller(name) {
+            if (!confirm(`确定删除说书人「${name}」吗？`)) return;
+            try {
+                await fetch(`${API_BASE}/storytellers/${encodeURIComponent(name)}`, {
+                    method: 'DELETE'
+                });
+                await fetchStorytellers();
+                renderStorytellerLeaderboard();
+            } catch (e) {
+                console.error('删除失败:', e);
+            }
+        }
+
+        // 添加说书人玩家（独立添加，不影响玩家列表）
         async function addStorytellerPlayer() {
             const nameInput = document.getElementById('storytellerName');
             const name = nameInput.value.trim();
@@ -854,48 +869,17 @@
                 return;
             }
 
-            // 检查玩家是否存在
-            const exists = players.some(p => p.name === name);
-            if (!exists) {
-                alert('该玩家不存在，请先在上面的「添加玩家」中添加');
-                return;
-            }
-
-            // 给该玩家说书次数+1（或初始化为1）
-            const player = players.find(p => p.name === name);
-            const delta = (player.storyteller || 0) === 0 ? 1 : 0;
-            if (delta === 0) {
-                alert('该玩家已在说书人列表中');
-                return;
-            }
-
             try {
-                await fetch(`${API_BASE}/players/${encodeURIComponent(name)}/storyteller`, {
+                await fetch(`${API_BASE}/storytellers`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ delta: 1 })
+                    body: JSON.stringify({ name })
                 });
                 nameInput.value = '';
-                await fetchPlayers();
-                renderLeaderboard();
+                await fetchStorytellers();
                 renderStorytellerLeaderboard();
             } catch (e) {
                 alert('添加失败: ' + e.message);
-            }
-        }
-
-        // 按名字删除玩家
-        async function deletePlayerByName(name) {
-            if (!confirm(`确定删除玩家「${name}」吗？`)) return;
-            try {
-                await fetch(`${API_BASE}/players/${encodeURIComponent(name)}`, {
-                    method: 'DELETE'
-                });
-                await fetchPlayers();
-                renderLeaderboard();
-                renderStorytellerLeaderboard();
-            } catch (e) {
-                alert('删除失败: ' + e.message);
             }
         }
     </script>

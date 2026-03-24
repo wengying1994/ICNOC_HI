@@ -208,6 +208,82 @@ app.post('/api/season', (req, res) => {
     res.json({ success: true });
 });
 
+// ===== 头榜说书人（独立数据） =====
+
+const STORYTELLERS_FILE = '/data/storytellers.json';
+
+function readStorytellers() {
+    try {
+        if (fs.existsSync(STORYTELLERS_FILE)) {
+            return JSON.parse(fs.readFileSync(STORYTELLERS_FILE, 'utf8'));
+        }
+    } catch (e) {
+        console.error('读取说书人数据失败:', e);
+    }
+    return [];
+}
+
+function saveStorytellers(data) {
+    try {
+        fs.writeFileSync(STORYTELLERS_FILE, JSON.stringify(data, null, 2));
+        return true;
+    } catch (e) {
+        console.error('保存说书人数据失败:', e);
+        return false;
+    }
+}
+
+// 获取所有说书人
+app.get('/api/storytellers', (req, res) => {
+    const storytellers = readStorytellers();
+    storytellers.sort((a, b) => b.count - a.count);
+    res.json(storytellers);
+});
+
+// 添加或更新说书人（delta参数支持增减）
+app.post('/api/storytellers', (req, res) => {
+    const { name, delta } = req.body;
+    if (!name) {
+        return res.status(400).json({ error: '需要说书人名称' });
+    }
+
+    const storytellers = readStorytellers();
+    const existing = storytellers.find(s => s.name === name);
+
+    if (delta !== undefined) {
+        // 增量操作
+        if (existing) {
+            existing.count = Math.max(0, existing.count + delta);
+            if (existing.count === 0) {
+                storytellers.splice(storytellers.indexOf(existing), 1);
+            }
+        }
+    } else {
+        // 新增操作
+        if (existing) {
+            existing.count += 1;
+        } else {
+            storytellers.push({
+                name,
+                count: 1,
+                createdAt: new Date().toISOString()
+            });
+        }
+    }
+
+    saveStorytellers(storytellers);
+    res.json({ success: true, storytellers });
+});
+
+// 删除说书人
+app.delete('/api/storytellers/:name', (req, res) => {
+    const { name } = req.params;
+    let storytellers = readStorytellers();
+    storytellers = storytellers.filter(s => s.name !== name);
+    saveStorytellers(storytellers);
+    res.json({ success: true });
+});
+
 app.listen(PORT, () => {
     console.log(`API 服务运行在端口 ${PORT}`);
 });
